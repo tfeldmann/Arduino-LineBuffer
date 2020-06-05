@@ -1,6 +1,6 @@
-#include "line_buffer.h"
+#include "print_queue.h"
 
-LineBuffer::LineBuffer(uint32_t size, uint32_t expected_line_length = 0)
+PrintQueue::PrintQueue(uint32_t size, uint32_t expected_line_length = 0)
 {
     buf_size_ = size;
     out_size_ = expected_line_length;
@@ -8,13 +8,13 @@ LineBuffer::LineBuffer(uint32_t size, uint32_t expected_line_length = 0)
     out_ = (char *)calloc(sizeof(char), out_size_);
 }
 
-LineBuffer::~LineBuffer()
+PrintQueue::~PrintQueue()
 {
     free(buf_);
     free(out_);
 }
 
-size_t LineBuffer::write(uint8_t character)
+size_t PrintQueue::write(uint8_t character)
 {
     char c = (char)character;
     if (c == '\n')
@@ -33,13 +33,13 @@ size_t LineBuffer::write(uint8_t character)
     return 1;
 }
 
-char *LineBuffer::peek()
+char *PrintQueue::peek()
 {
     copy_to_output(tail_, next_line_length());
     return out_;
 }
 
-char *LineBuffer::pop()
+char *PrintQueue::pop()
 {
     uint32_t len = next_line_length();
     copy_to_output(tail_, len);
@@ -51,14 +51,14 @@ char *LineBuffer::pop()
     return out_;
 }
 
-uint32_t LineBuffer::waiting()
+uint32_t PrintQueue::waiting()
 {
     if (buffer_full_)
         return 0;
     return delta(tail_, head_);
 }
 
-void LineBuffer::clear()
+void PrintQueue::clear()
 {
     head_ = 0;
     tail_ = 0;
@@ -68,7 +68,7 @@ void LineBuffer::clear()
     buffer_full_ = false;
 }
 
-void LineBuffer::add_char(char c)
+void PrintQueue::add_char(char c)
 {
     buf_[write_] = c;
     write_ = (write_ + 1) % buf_size_;
@@ -91,7 +91,7 @@ void LineBuffer::add_char(char c)
     }
 }
 
-bool LineBuffer::resize_output_buffer(uint32_t count)
+bool PrintQueue::resize_output_buffer(uint32_t count)
 {
     // resize and leave some space for future lines
     uint32_t new_out_size = count * 1.5;
@@ -117,7 +117,7 @@ bool LineBuffer::resize_output_buffer(uint32_t count)
     return false;
 }
 
-void LineBuffer::copy_to_output(uint32_t start, uint32_t count)
+void PrintQueue::copy_to_output(uint32_t start, uint32_t count)
 {
     if (count > out_size_)
     {
@@ -133,13 +133,13 @@ void LineBuffer::copy_to_output(uint32_t start, uint32_t count)
     }
 }
 
-void LineBuffer::zero(uint32_t start, uint32_t count)
+void PrintQueue::zero(uint32_t start, uint32_t count)
 {
     for (uint32_t i = 0; i < count; i++)
         buf_[(start + i) % buf_size_] = 0;
 }
 
-uint32_t LineBuffer::delta(uint32_t from, uint32_t to)
+uint32_t PrintQueue::delta(uint32_t from, uint32_t to)
 {
     if (from <= to)
         return to - from;
@@ -147,7 +147,7 @@ uint32_t LineBuffer::delta(uint32_t from, uint32_t to)
         return buf_size_ - from + to;
 }
 
-uint32_t LineBuffer::next_line_length()
+uint32_t PrintQueue::next_line_length()
 {
     if (buffer_full_)
         return 0;

@@ -1,11 +1,11 @@
 #pragma once
 #include <Arduino.h>
 
-class LineBuffer : public Print
+class PrintQueue : public Print
 {
 public:
-    LineBuffer(uint32_t size, uint32_t expected_line_length = 0);
-    ~LineBuffer();
+    PrintQueue(uint32_t size, uint32_t expected_line_length = 0);
+    ~PrintQueue();
     size_t write(uint8_t character);
     char *peek();
     char *pop();
