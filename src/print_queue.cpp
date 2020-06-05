@@ -1,6 +1,6 @@
 #include "print_queue.h"
 
-PrintQueue::PrintQueue(uint32_t size, uint32_t expected_line_length = 0)
+PrintQueue::PrintQueue(uint32_t size, uint32_t expected_line_length)
 {
     buf_size_ = size;
     out_size_ = expected_line_length;

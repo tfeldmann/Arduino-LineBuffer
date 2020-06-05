@@ -4,9 +4,9 @@
 class PrintQueue : public Print
 {
 public:
-    PrintQueue(uint32_t size, uint32_t expected_line_length = 0);
+    PrintQueue(uint32_t size, uint32_t expected_line_length = 20);
     ~PrintQueue();
-    size_t write(uint8_t character);
+    size_t write(uint8_t character) override;
     char *peek();
     char *pop();
     uint32_t waiting();
